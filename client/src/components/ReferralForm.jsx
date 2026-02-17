@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import config from '../config/config';
 
 const ReferralForm = ({ onCandidateAdded }) => {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ const ReferralForm = ({ onCandidateAdded }) => {
   const [success, setSuccess] = useState('');
   const [errors, setErrors] = useState({});
 
-  const API_BASE_URL = 'http://localhost:5000/api';
+  const API_BASE_URL = config.API_BASE_URL;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

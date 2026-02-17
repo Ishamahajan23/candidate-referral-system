@@ -27,7 +27,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
   console.error('Error connecting to MongoDB:', err);
 });
 
-app.use('/candidates', candidateRoutes);
+app.use('/api/candidates', candidateRoutes);
 
 app.get('/health', (req, res) => {
   res.status(200).json({

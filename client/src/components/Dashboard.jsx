@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import config from '../config/config';
 
 const Dashboard = () => {
   const [candidates, setCandidates] = useState([]);
@@ -9,7 +10,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [stats, setStats] = useState(null);
 
-  const API_BASE_URL = 'http://localhost:5001';
+  const API_BASE_URL = config.API_BASE_URL;
 
   useEffect(() => {
     fetchCandidates();
