@@ -12,7 +12,7 @@ const AuthWrapper = () => {
       <div className="text-center ">
         <button
           onClick={() => setIsLogin(!isLogin)}
-          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+          className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer"
         >
           {isLogin 
             ? "Don't have an account? Sign up" 
