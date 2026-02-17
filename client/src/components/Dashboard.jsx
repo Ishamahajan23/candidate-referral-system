@@ -137,28 +137,28 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Candidate Dashboard</h1>
+    <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">Candidate Dashboard</h1>
         
         {/* Statistics Cards */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-              <h3 className="text-2xl font-bold text-gray-900">{stats.total}</h3>
-              <p className="text-gray-600 text-sm">Total Candidates</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.total}</h3>
+              <p className="text-gray-600 text-xs sm:text-sm">Total Candidates</p>
             </div>
-            <div className="bg-yellow-50 p-6 rounded-lg shadow-md border border-yellow-200">
-              <h3 className="text-2xl font-bold text-yellow-800">{stats.pending}</h3>
-              <p className="text-yellow-600 text-sm">Pending</p>
+            <div className="bg-yellow-50 p-4 sm:p-6 rounded-lg shadow-md border border-yellow-200">
+              <h3 className="text-xl sm:text-2xl font-bold text-yellow-800">{stats.pending}</h3>
+              <p className="text-yellow-600 text-xs sm:text-sm">Pending</p>
             </div>
-            <div className="bg-blue-50 p-6 rounded-lg shadow-md border border-blue-200">
-              <h3 className="text-2xl font-bold text-blue-800">{stats.reviewed}</h3>
-              <p className="text-blue-600 text-sm">Reviewed</p>
+            <div className="bg-blue-50 p-4 sm:p-6 rounded-lg shadow-md border border-blue-200">
+              <h3 className="text-xl sm:text-2xl font-bold text-blue-800">{stats.reviewed}</h3>
+              <p className="text-blue-600 text-xs sm:text-sm">Reviewed</p>
             </div>
-            <div className="bg-green-50 p-6 rounded-lg shadow-md border border-green-200">
-              <h3 className="text-2xl font-bold text-green-800">{stats.hired}</h3>
-              <p className="text-green-600 text-sm">Hired</p>
+            <div className="bg-green-50 p-4 sm:p-6 rounded-lg shadow-md border border-green-200">
+              <h3 className="text-xl sm:text-2xl font-bold text-green-800">{stats.hired}</h3>
+              <p className="text-green-600 text-xs sm:text-sm">Hired</p>
             </div>
           </div>
         )}
@@ -171,15 +171,15 @@ const Dashboard = () => {
       )}
 
       {/* Search and Filter Controls */}
-      <div className="bg-white p-4 rounded-lg shadow-md border border-gray-200 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md border border-gray-200 mb-4 sm:mb-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Search by name, job title, or email..."
+              placeholder="Search candidates..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 sm:px-4 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           
@@ -187,7 +187,7 @@ const Dashboard = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 sm:px-4 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Status</option>
               <option value="Pending">Pending</option>
@@ -216,10 +216,10 @@ const Dashboard = () => {
           </div>
         ) : (
           filteredCandidates.map((candidate) => (
-            <div key={candidate._id} className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 truncate">{candidate.name}</h3>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full border ${
+            <div key={candidate._id} className="bg-white rounded-lg shadow-md border border-gray-200 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 gap-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 break-words">{candidate.name}</h3>
+                <span className={`self-start px-2 py-1 text-xs font-medium rounded-full border shrink-0 ${
                   candidate.status === 'Pending' 
                     ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
                     : candidate.status === 'Reviewed'
@@ -230,10 +230,10 @@ const Dashboard = () => {
                 </span>
               </div>
               
-              <div className="space-y-2 text-sm text-gray-600 mb-4">
-                <p><span className="font-medium">Job Title:</span> {candidate.jobTitle}</p>
+              <div className="space-y-2 text-xs sm:text-sm text-gray-600 mb-4">
+                <p><span className="font-medium">Job Title:</span> <span className="break-words">{candidate.jobTitle}</span></p>
                 <p><span className="font-medium">Email:</span> 
-                  <a href={`mailto:${candidate.email}`} className="text-blue-600 hover:underline ml-1">
+                  <a href={`mailto:${candidate.email}`} className="text-blue-600 hover:underline ml-1 break-all">
                     {candidate.email}
                   </a>
                 </p>
@@ -249,7 +249,7 @@ const Dashboard = () => {
                       href={candidate.resumeUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline ml-1"
+                      className="text-blue-600 hover:underline ml-1 inline-flex items-center"
                     >
                       View PDF ↗
                     </a>
@@ -257,13 +257,13 @@ const Dashboard = () => {
                 )}
               </div>
 
-              <div className="space-y-3 pt-4 border-t border-gray-200">
+              <div className="space-y-3 pt-3 sm:pt-4 border-t border-gray-200">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Update Status:</label>
                   <select
                     value={candidate.status}
                     onChange={(e) => updateCandidateStatus(candidate._id, e.target.value)}
-                    className="w-full text-sm px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full text-xs sm:text-sm px-2 sm:px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="Pending">Pending</option>
                     <option value="Reviewed">Reviewed</option>
@@ -273,7 +273,7 @@ const Dashboard = () => {
                 
                 <button
                   onClick={() => deleteCandidateHandler(candidate._id)}
-                  className="w-full px-3 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
+                  className="w-full px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-200"
                 >
                   Delete Candidate
                 </button>
