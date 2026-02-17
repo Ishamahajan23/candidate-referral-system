@@ -3,30 +3,73 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 const candidateRoutes = require('./routes/candidateRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'http://localhost:5173',
-    'http://localhost:5174',
-    /^https:\/\/.*\.onrender\.com$/
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5173', 
+      'http://localhost:5174',
+      'https://candidate-referral-system-cunz.onrender.com'
+    ];
+    
+    // Check if origin is in allowed list or matches pattern
+    if (allowedOrigins.includes(origin) || 
+        /^https:\/\/.*\.onrender\.com$/.test(origin) ||
+        /^https:\/\/.*\.netlify\.app$/.test(origin) ||
+        /^https:\/\/.*\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+    
+    return callback(null, true); // Allow all origins temporarily for debugging
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'x-requested-with',
+    'Accept',
+    'Origin',
+    'X-Requested-With'
   ],
-  credentials: true
+  exposedHeaders: ['Set-Cookie'],
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 }));
 
-// Add request logging
+// Additional CORS headers middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,PATCH');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Accept, Origin');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
@@ -48,14 +91,15 @@ const connectDB = async () => {
   } catch (err) {
     console.error('MongoDB connection error:', err.message);
     console.error('Full error:', err);
-    // Don't exit in production, try to continue
-    setTimeout(connectDB, 5000); // Retry after 5 seconds
+   
+    setTimeout(connectDB, 5000); 
   }
 };
 
-// Connect to database
 connectDB();
 
+// Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/candidates', candidateRoutes);
 
 app.get('/health', (req, res) => {
@@ -68,7 +112,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// 404 handler
 app.use('*', (req, res) => {
   console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
   res.status(404).json({

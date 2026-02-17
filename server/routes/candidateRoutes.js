@@ -8,6 +8,9 @@ const {
   getCandidateStats,
   upload
 } = require('../controllers/candidateController');
+const { protect } = require('../middleware/auth');
+
+router.use(protect);
 
 router.get('/', getAllCandidates);
 
