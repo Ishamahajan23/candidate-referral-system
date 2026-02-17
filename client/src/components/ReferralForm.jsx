@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import config from '../config/config';
+import { createCandidate } from '../utils/api';
 
 const ReferralForm = ({ onCandidateAdded }) => {
   const [formData, setFormData] = useState({
@@ -13,8 +13,6 @@ const ReferralForm = ({ onCandidateAdded }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [errors, setErrors] = useState({});
-
-  const API_BASE_URL = config.API_BASE_URL;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -124,27 +122,18 @@ const ReferralForm = ({ onCandidateAdded }) => {
         submitData.append('resume', resumeFile);
       }
       
-      const response = await fetch(`${API_BASE_URL}/candidates`, {
-        method: 'POST',
-        body: submitData
-      });
+      const data = await createCandidate(submitData);
       
-      const data = await response.json();
+      setSuccess('Candidate referred successfully!');
+      resetForm();
       
-      if (data.success) {
-        setSuccess('Candidate referred successfully!');
-        resetForm();
-        
-        if (onCandidateAdded) {
-          onCandidateAdded(data.data);
-        }
-        
-        setTimeout(() => setSuccess(''), 5000);
-      } else {
-        setError(data.message || 'Failed to refer candidate');
+      if (onCandidateAdded) {
+        onCandidateAdded(data);
       }
+      
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err) {
-      setError('Failed to connect to server. Please try again.');
+      setError(err.message || 'Failed to refer candidate. Please try again.');
       console.error('Error submitting form:', err);
     } finally {
       setLoading(false);

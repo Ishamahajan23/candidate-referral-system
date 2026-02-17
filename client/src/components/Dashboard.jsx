@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import config from '../config/config';
+import { getCandidates, getCandidatesStats } from '../utils/api';
 
 const Dashboard = () => {
   const [candidates, setCandidates] = useState([]);
@@ -10,7 +10,7 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [stats, setStats] = useState(null);
 
-  const API_BASE_URL = config.API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
   useEffect(() => {
     fetchCandidates();
@@ -24,16 +24,10 @@ const Dashboard = () => {
   const fetchCandidates = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/candidates`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setCandidates(data.data);
-      } else {
-        setError(data.message || 'Failed to fetch candidates');
-      }
+      const data = await getCandidates();
+      setCandidates(data);
     } catch (err) {
-      setError('Failed to connect to server');
+      setError('Failed to fetch candidates');
       console.error('Error fetching candidates:', err);
     } finally {
       setLoading(false);
@@ -42,12 +36,8 @@ const Dashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/candidates/stats`);
-      const data = await response.json();
-      
-      if (data.success) {
-        setStats(data.data);
-      }
+      const data = await getCandidatesStats();
+      setStats(data);
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
@@ -56,7 +46,6 @@ const Dashboard = () => {
   const filterCandidates = () => {
     let filtered = candidates;
 
-    // Filter by search term
     if (searchTerm) {
       filtered = filtered.filter(candidate =>
         candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -65,7 +54,6 @@ const Dashboard = () => {
       );
     }
 
-    // Filter by status
     if (statusFilter !== 'all') {
       filtered = filtered.filter(candidate => candidate.status === statusFilter);
     }
@@ -86,7 +74,6 @@ const Dashboard = () => {
       const data = await response.json();
       
       if (data.success) {
-        // Update local state
         setCandidates(prevCandidates =>
           prevCandidates.map(candidate =>
             candidate._id === candidateId 
@@ -94,7 +81,6 @@ const Dashboard = () => {
               : candidate
           )
         );
-        // Refresh stats
         fetchStats();
       } else {
         setError(data.message || 'Failed to update status');

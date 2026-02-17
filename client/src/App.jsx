@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navigation from './components/Navigation';
 import Dashboard from './components/Dashboard';
 import ReferralForm from './components/ReferralForm';
+import AuthWrapper from './components/AuthWrapper';
 import './App.css';
 
-function App() {
+const MainApp = () => {
+  const { isAuthenticated, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -12,6 +15,21 @@ function App() {
     setRefreshTrigger(prev => prev + 1);
     setActiveTab('dashboard'); 
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthWrapper />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -33,6 +51,14 @@ function App() {
         </div>
       </footer>
     </div>
+  );
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }
 
