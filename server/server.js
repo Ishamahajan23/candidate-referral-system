@@ -12,7 +12,13 @@ const PORT = process.env.PORT || 5000;
 const candidateRoutes = require('./routes/candidateRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://candidate-referral-system-1.onrender.com"
+  ],
+  credentials: true
+}));
 
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
