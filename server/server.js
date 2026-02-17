@@ -14,7 +14,6 @@ const authRoutes = require('./routes/authRoutes');
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, etc.)
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
@@ -24,7 +23,6 @@ app.use(cors({
       'https://candidate-referral-system-cunz.onrender.com'
     ];
     
-    // Check if origin is in allowed list or matches pattern
     if (allowedOrigins.includes(origin) || 
         /^https:\/\/.*\.onrender\.com$/.test(origin) ||
         /^https:\/\/.*\.netlify\.app$/.test(origin) ||
@@ -32,7 +30,7 @@ app.use(cors({
       return callback(null, true);
     }
     
-    return callback(null, true); // Allow all origins temporarily for debugging
+    return callback(null, true); 
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -49,7 +47,6 @@ app.use(cors({
   preflightContinue: false
 }));
 
-// Additional CORS headers middleware
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
@@ -105,13 +102,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.all('*', (req, res) => {
-  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
-  res.status(404).json({
-    success: false,
-    message: `Route ${req.method} ${req.originalUrl} not found`
-  });
-});
 
 app.use((error, req, res, next) => {
   console.error('Global error handler caught:', error);
