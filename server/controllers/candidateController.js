@@ -1,16 +1,18 @@
 const Candidate = require('../models/candidate');
 const multer = require('multer');
+const { S3Client } = require('@aws-sdk/client-s3');
+const { Upload } = require('@aws-sdk/lib-storage');
 const path = require('path');
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/') 
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
 });
+
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'application/pdf') {
@@ -27,6 +29,24 @@ const upload = multer({
   },
   fileFilter: fileFilter
 });
+
+const uploadToS3 = async (file) => {
+  const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+  const fileName = `resumes/${uniqueSuffix}${path.extname(file.originalname)}`;
+  
+  const upload = new Upload({
+    client: s3Client,
+    params: {
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileName,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    },
+  });
+
+  const result = await upload.done();
+  return result.Location;
+};
 
 const validateEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -110,8 +130,18 @@ const createCandidate = async (req, res) => {
       jobTitle: jobTitle.trim()
     };
 
+    // Upload resume to S3 if provided
     if (req.file) {
-      candidateData.resumeUrl = `/uploads/${req.file.filename}`;
+      try {
+        const s3Url = await uploadToS3(req.file);
+        candidateData.resumeUrl = s3Url;
+      } catch (uploadError) {
+        console.error('S3 upload error:', uploadError);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to upload resume. Please try again.'
+        });
+      }
     }
 
     const candidate = new Candidate(candidateData);

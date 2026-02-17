@@ -63,7 +63,7 @@ const Dashboard = () => {
 
   const updateCandidateStatus = async (candidateId, newStatus) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/candidates/${candidateId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/api/candidates/${candidateId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/candidates/${candidateId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/candidates/${candidateId}`, {
         method: 'DELETE',
       });
 
@@ -246,7 +246,7 @@ const Dashboard = () => {
                 {candidate.resumeUrl && (
                   <p><span className="font-medium">Resume:</span>
                     <a 
-                      href={`http://localhost:5000${candidate.resumeUrl}`} 
+                      href={candidate.resumeUrl} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline ml-1"
